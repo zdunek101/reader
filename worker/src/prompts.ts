@@ -14,13 +14,15 @@ ACCURACY
 - summary: 3–5 complete sentences describing what the document is and its most important facts.
 - keyPoints: 3–7 short, specific items (numbers, deadlines, obligations). If the document uses several currencies, cover each of them.
 - dates: convert every full date to ISO 8601 (YYYY-MM-DD). Skip dates without a specific day. Each with a short context.
-- amounts: every significant amount (at most 40): totals, net/gross/VAT values, instalments and stage amounts, fees, penalties, limits; skip long price-list rows first if the limit would be exceeded. Value as a JSON number without thousands separators, currency as ISO 4217 (zł → PLN, € → EUR, $ → USD). State in context what the amount is for and whether it is net or gross when the document says so. Do not repeat the same amount with the same meaning.
-- entities: organizations and people mentioned by name, in their base (nominative) form, without duplicates. Use names exactly as written: do not expand abbreviations and do not list product names (e.g. "Microsoft 365") as organizations.
+- amounts: every significant amount: totals, net/gross/VAT values, instalments and stage amounts, fees, penalties, limits. Long price lists may be summarized by their most important rows. Value as a JSON number without thousands separators, currency as ISO 4217 (zł → PLN, € → EUR, $ → USD). State in context what the amount is for, using the document's own label for it (never relabel, e.g. a fee is not a budget), and whether it is net or gross when the document says so. Do not repeat the same amount with the same meaning, but list equal values separately when they mean different things (e.g. two stages with the same price).
+- Every context (amounts and dates) must describe exactly what the document says the value refers to; do not merge or guess the meaning of nearby values.
+- entities: organizations and people mentioned by name, in their base (nominative) form, without duplicates. Use names exactly as written and do not expand abbreviations. Organizations are only legal entities and institutions (companies, public bodies, associations). Never list products, software, platforms or services, even when their name contains a vendor name (e.g. "Salesforce Sales Cloud" or "Google Workspace" are products, not organizations).
 - document.type: faktura (invoice), umowa (contract/agreement), oferta (offer), raport (report) or inne (other).
 - document.date: the date the document was issued or signed, otherwise null.
 - Markers like [Page 3] show page numbers.`;
 
-const DOCUMENT_TAG = /<\/?document>/gi;
+/** Znaczniki <document> w dowolnym zapisie: wielkość liter, spacje, atrybuty (np. `< /Document >`). */
+const DOCUMENT_TAG = /<\s*\/?\s*document\b[^>]*>/gi;
 
 /** Opakowuje tekst dokumentu w znaczniki; usuwa znaczniki z treści, by nie dało się „wyjść” z sekcji danych. */
 export function buildDocumentPrompt(text: string, part: { index: number; total: number }): string {
