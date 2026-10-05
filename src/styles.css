@@ -1,30 +1,31 @@
 /*
- * Tokeny kolorów. Jasny motyw jest domyślny; ciemny włącza się automatycznie
- * według ustawień systemu (prefers-color-scheme). Limonka (#c6ff3d) służy tylko
- * jako wypełnienie — na jasnym tle tekstowe akcenty używają --color-accent-ink.
+ * Tokeny kolorów — paleta „mineral jade”: chłodne, lekko zielonkawe szarości
+ * i nefrytowy akcent (w ciemnym motywie miętowy). Jasny motyw jest domyślny;
+ * ciemny włącza się według ustawień systemu (prefers-color-scheme).
+ * Wszystkie pary tekst/tło mają kontrast min. 4,5:1, obramowania kontrolek min. 3:1.
  */
 :root {
-  --color-bg: #f6f6f3;
-  --color-surface: #fff;
-  --color-surface-muted: #f0f0ec;
-  --color-border: #e3e3dd;
-  --color-border-control: #cfcfc8;
-  --color-border-strong: #8c8c85;
-  --color-text: #111;
-  --color-text-muted: #5e5e58;
-  --color-accent: #c6ff3d;
-  --color-accent-hover: #b8f526;
-  --color-accent-border: #9ccf1a;
-  --color-accent-soft: #f4ffdc;
-  --color-accent-ink: #476800;
-  --color-on-accent: #111;
-  --color-focus: #476800;
-  --color-error: #b42318;
-  --color-error-soft: #fef3f2;
-  --color-warning: #8a5300;
-  --color-warning-soft: #fff8e5;
-  --color-warning-border: #f0d48a;
-  --shadow-panel: 0 1px 2px rgb(17 17 17 / 4%);
+  --color-bg: #eef2f0;
+  --color-surface: #fbfcfb;
+  --color-surface-muted: #e4eae7;
+  --color-border: #d5ddd9;
+  --color-border-control: #bcc7c2;
+  --color-border-strong: #7a8a83;
+  --color-text: #12201b;
+  --color-text-muted: #4f5f58;
+  --color-accent: #0e6b57;
+  --color-accent-hover: #0a5747;
+  --color-accent-border: #0a5747;
+  --color-accent-soft: #dcefe8;
+  --color-accent-ink: #0b5e4c;
+  --color-on-accent: #f4fbf8;
+  --color-focus: #0e6b57;
+  --color-error: #b0302a;
+  --color-error-soft: #fbeceb;
+  --color-warning: #7d5300;
+  --color-warning-soft: #fbf2dc;
+  --color-warning-border: #e6c77e;
+  --shadow-panel: 0 1px 2px rgb(18 32 27 / 6%);
   --radius: 10px;
   --radius-control: 6px;
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -40,25 +41,26 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #0e0e0e;
-    --color-surface: #171717;
-    --color-surface-muted: #1f1f1f;
-    --color-border: #2c2c2c;
-    --color-border-control: #3a3a3a;
-    --color-border-strong: #6b6b6b;
-    --color-text: #f2f2f2;
-    --color-text-muted: #a6a6a6;
-    --color-accent-hover: #d4ff6b;
-    --color-accent-border: #c6ff3d;
-    --color-accent-soft: rgb(198 255 61 / 8%);
-    --color-accent-ink: #c6ff3d;
-    --color-on-accent: #0e0e0e;
-    --color-focus: #c6ff3d;
-    --color-error: #ff8a80;
-    --color-error-soft: rgb(255 138 128 / 8%);
-    --color-warning: #ffd166;
-    --color-warning-soft: rgb(255 209 102 / 8%);
-    --color-warning-border: rgb(255 209 102 / 40%);
+    --color-bg: #0c1412;
+    --color-surface: #121c19;
+    --color-surface-muted: #182521;
+    --color-border: #24332e;
+    --color-border-control: #30423c;
+    --color-border-strong: #5f7570;
+    --color-text: #e3ece8;
+    --color-text-muted: #9cb0a8;
+    --color-accent: #5ad1b0;
+    --color-accent-hover: #79dcc0;
+    --color-accent-border: #5ad1b0;
+    --color-accent-soft: rgb(90 209 176 / 10%);
+    --color-accent-ink: #6fdcbd;
+    --color-on-accent: #062019;
+    --color-focus: #6fdcbd;
+    --color-error: #ff8f85;
+    --color-error-soft: rgb(255 143 133 / 8%);
+    --color-warning: #f2c46b;
+    --color-warning-soft: rgb(242 196 107 / 8%);
+    --color-warning-border: rgb(242 196 107 / 40%);
     --shadow-panel: none;
 
     color-scheme: dark;
