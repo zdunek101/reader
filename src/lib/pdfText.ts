@@ -3,10 +3,10 @@ import {
   GlobalWorkerOptions,
   type PDFDocumentLoadingTask,
   type PDFDocumentProxy,
-} from 'pdfjs-dist';
+} from 'pdfjs-dist/legacy/build/pdf.mjs';
 import type { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
 // Vite dołącza worker jako osobny plik z poprawnym prefiksem `base` (wymóg GitHub Pages).
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import { recognizePagesText } from './pageOcr';
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
@@ -50,7 +50,7 @@ export async function extractPdfText(file: File, onOcrStart: () => void): Promis
     }
 
     const text = pageTexts
-      .map((pageText, index) => `[Strona ${index + 1}]\n${pageText}`)
+      .map((pageText, index) => `[Page ${index + 1}]\n${pageText}`)
       .join('\n\n');
     return {
       pages: pdf.numPages,
