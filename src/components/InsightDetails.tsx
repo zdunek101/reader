@@ -11,8 +11,8 @@ export function InsightDetails({ insight }: { insight: Insight }) {
         <div className="notice notice--warning" role="note">
           <strong>Uwagi</strong>
           <ul>
-            {warnings.map((warning) => (
-              <li key={warning}>{warning}</li>
+            {warnings.map((warning, index) => (
+              <li key={index}>{warning}</li>
             ))}
           </ul>
         </div>
@@ -32,8 +32,8 @@ export function InsightDetails({ insight }: { insight: Insight }) {
 
       <Section title="Najważniejsze punkty">
         <ul className="key-points">
-          {keyPoints.map((point) => (
-            <li key={point}>{point}</li>
+          {keyPoints.map((point, index) => (
+            <li key={index}>{point}</li>
           ))}
         </ul>
       </Section>
@@ -97,8 +97,8 @@ function TagList({ items }: { items: string[] }) {
   if (items.length === 0) return <EmptyValue />;
   return (
     <ul className="tags">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
       ))}
     </ul>
   );

@@ -21,7 +21,10 @@ export function App() {
   return (
     <div className="layout">
       <header className="site-header">
-        <h1>PDF Insight</h1>
+        <h1 className="brand">
+          <span className="brand__mark" aria-hidden="true" />
+          PDF Insight
+        </h1>
         <p className="lead">
           Wgraj plik PDF — otrzymasz krótkie podsumowanie i uporządkowane dane do pobrania jako
           JSON.
@@ -31,7 +34,11 @@ export function App() {
       <main>
         {state.status === 'idle' && (
           <>
-            <FileDropzone onFileSelected={analyze} />
+            {/* Informacja o wysyłce do API AI musi być widoczna przed wyborem pliku. */}
+            <div className="upload">
+              <FileDropzone onFileSelected={analyze} />
+              <PrivacyNotice />
+            </div>
             <EmptyState />
           </>
         )}
@@ -58,10 +65,6 @@ export function App() {
           onRemove={(id) => setHistory((current) => removeFromHistory(current, id))}
         />
       </main>
-
-      <footer className="site-footer">
-        <PrivacyNotice />
-      </footer>
     </div>
   );
 }

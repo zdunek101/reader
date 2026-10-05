@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from 'react';
+import { useAutoFocus } from '../hooks/useAutoFocus';
 import { downloadInsightJson, insightToJson } from '../lib/insightExport';
 import type { Insight } from '../lib/schema';
 import { InsightDetails } from './InsightDetails';
@@ -18,6 +19,7 @@ interface InsightViewProps {
 export function InsightView({ insight, onReset }: InsightViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>('details');
   const [copyStatus, setCopyStatus] = useState('');
+  const titleRef = useAutoFocus<HTMLHeadingElement>(insight);
 
   const copyJson = async () => {
     try {
@@ -39,9 +41,12 @@ export function InsightView({ insight, onReset }: InsightViewProps) {
   return (
     <section className="panel" aria-labelledby="result-title">
       <header className="result-header">
-        <h2 id="result-title" className="panel__title">
-          Wynik: <span className="file-name">{insight.document.fileName}</span>
-        </h2>
+        <div>
+          <p className="label">Wynik analizy</p>
+          <h2 ref={titleRef} tabIndex={-1} id="result-title" className="panel__title">
+            <span className="file-name">{insight.document.fileName}</span>
+          </h2>
+        </div>
         <div className="actions">
           <button
             type="button"
@@ -56,11 +61,11 @@ export function InsightView({ insight, onReset }: InsightViewProps) {
           <button type="button" className="button" onClick={onReset}>
             Analizuj inny plik
           </button>
+          <p className="copy-status" aria-live="polite">
+            {copyStatus}
+          </p>
         </div>
       </header>
-      <p className="visually-hidden" aria-live="polite">
-        {copyStatus}
-      </p>
 
       <div role="tablist" aria-label="Widok wyniku" className="tabs" onKeyDown={handleTabKeyDown}>
         {TABS.map(({ id, label }) => (
@@ -80,14 +85,19 @@ export function InsightView({ insight, onReset }: InsightViewProps) {
         ))}
       </div>
 
-      <div id={`panel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`}>
-        {activeTab === 'details' ? (
-          <InsightDetails insight={insight} />
-        ) : (
-          <pre className="json-preview" tabIndex={0}>
-            <code>{insightToJson(insight)}</code>
-          </pre>
-        )}
+      {/* Oba panele są w DOM, żeby `aria-controls` każdej zakładki wskazywał istniejący element. */}
+      <div
+        id="panel-details"
+        role="tabpanel"
+        aria-labelledby="tab-details"
+        hidden={activeTab !== 'details'}
+      >
+        <InsightDetails insight={insight} />
+      </div>
+      <div id="panel-json" role="tabpanel" aria-labelledby="tab-json" hidden={activeTab !== 'json'}>
+        <pre className="json-preview" tabIndex={0} aria-label="Podgląd danych JSON">
+          <code>{insightToJson(insight)}</code>
+        </pre>
       </div>
     </section>
   );

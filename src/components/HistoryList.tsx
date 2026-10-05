@@ -12,9 +12,12 @@ export function HistoryList({ entries, onSelect, onRemove }: HistoryListProps) {
 
   return (
     <section className="history" aria-labelledby="history-title">
-      <h2 id="history-title" className="history__title">
-        Ostatnie analizy
-      </h2>
+      <header className="history__header">
+        <h2 id="history-title" className="section-title">
+          Ostatnie analizy <span className="section-title__count">{entries.length}</span>
+        </h2>
+        <p className="muted">Zapisane tylko w tej przeglądarce</p>
+      </header>
       <ul className="history__list">
         {entries.map((entry) => {
           const { fileName, type } = entry.insight.document;

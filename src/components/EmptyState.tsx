@@ -1,6 +1,9 @@
 export function EmptyState() {
   return (
-    <section className="empty-state" aria-label="Jak to działa">
+    <section className="empty-state" aria-labelledby="flow-title">
+      <h2 id="flow-title" className="section-title">
+        Jak to działa
+      </h2>
       <ol className="flow">
         <li>
           <strong>Wgraj PDF</strong>

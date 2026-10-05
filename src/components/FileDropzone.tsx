@@ -17,6 +17,12 @@ export function FileDropzone({ onFileSelected }: FileDropzoneProps) {
     if (file) onFileSelected(file);
   };
 
+  // Przejście kursora nad element potomny też wywołuje dragleave — ignorujemy je, by obramowanie nie migało.
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    const target = event.relatedTarget;
+    if (!(target instanceof Node && event.currentTarget.contains(target))) setIsDragging(false);
+  };
+
   return (
     <div
       className={`dropzone${isDragging ? ' dropzone--active' : ''}`}
@@ -24,12 +30,14 @@ export function FileDropzone({ onFileSelected }: FileDropzoneProps) {
         event.preventDefault();
         setIsDragging(true);
       }}
-      onDragLeave={() => setIsDragging(false)}
+      onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      <p className="label">Krok 1 · Wgraj dokument</p>
       <p className="dropzone__title">Przeciągnij i upuść plik PDF</p>
       <p className="dropzone__hint">
-        lub wybierz go z dysku · tylko PDF, maks. {formatFileSize(MAX_FILE_BYTES)}
+        lub wybierz go z dysku ·{' '}
+        <span className="no-wrap">tylko PDF, maks. {formatFileSize(MAX_FILE_BYTES)}</span>
       </p>
       <button
         type="button"
