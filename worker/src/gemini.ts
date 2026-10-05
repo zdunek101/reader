@@ -4,7 +4,7 @@ import type { Env } from './env';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const REQUEST_TIMEOUT_MS = 25_000;
-/** Brief: przy błędnej odpowiedzi AI — jedna ponowna próba. */
+/** Zgodnie z briefem: przy błędnej odpowiedzi AI jedna ponowna próba. */
 const MAX_RETRIES = 1;
 
 const geminiResponseSchema = z.object({

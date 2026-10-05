@@ -11,7 +11,7 @@ export function EmptyState() {
         </li>
         <li>
           <strong>Odczyt tekstu</strong>
-          <span>w przeglądarce, ze skanami przez OCR</span>
+          <span>w przeglądarce, skany przez OCR</span>
         </li>
         <li>
           <strong>Analiza AI</strong>

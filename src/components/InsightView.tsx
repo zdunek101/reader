@@ -26,7 +26,7 @@ export function InsightView({ insight, onReset }: InsightViewProps) {
       await navigator.clipboard.writeText(insightToJson(insight));
       setCopyStatus('Skopiowano JSON do schowka.');
     } catch {
-      setCopyStatus('Nie udało się skopiować — użyj przycisku „Pobierz JSON”.');
+      setCopyStatus('Nie udało się skopiować. Użyj przycisku „Pobierz JSON”.');
     }
   };
 

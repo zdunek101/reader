@@ -37,7 +37,7 @@ Przeglądarka (React, GitHub Pages)          Cloudflare Worker                 G
 src/
   api/          klient HTTP backendu (insightApi.ts)
   components/   komponenty widoku
-  hooks/        usePdfAnalysis — maszyna stanów przepływu
+  hooks/        usePdfAnalysis: maszyna stanów przepływu
   lib/          schemat danych, odczyt PDF, OCR, formatowanie, historia, eksport
 worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, dzielenie i scalanie
 ```
@@ -45,7 +45,7 @@ worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, 
 ### Najważniejsze decyzje
 
 - **Tekst wyciągany w przeglądarce, nie na serwerze.** Do backendu trafia tylko tekst (zwykle kilkadziesiąt KB zamiast kilku MB pliku). Worker na darmowym planie ma limit czasu CPU, a parsowanie PDF i OCR wymagają dużo obliczeń.
-- **Jeden schemat jako źródło prawdy.** `src/lib/schema.ts` waliduje dane na frontendzie i w workerze. Z tego samego schematu generowany jest JSON Schema przekazywany modelowi w promptcie (`z.toJSONSchema`), więc opis formatu nie może się rozjechać z walidacją.
+- **Jeden schemat jako źródło prawdy.** `src/lib/schema.ts` waliduje dane na frontendzie i w workerze. Z tego samego schematu powstaje JSON Schema, który trafia do modelu w prompcie (`z.toJSONSchema`). Opis formatu nie może więc rozjechać się z walidacją.
 - **Ponowna próba z informacją o błędzie.** Gdy odpowiedź modelu nie przejdzie walidacji, worker ponawia zapytanie raz i dołącza listę błędów Zod. Jeśli druga próba też się nie powiedzie, zwraca komunikat błędu.
 - **Nazwę pliku i liczbę stron uzupełnia backend.** Model generuje tylko pola, których nie da się ustalić deterministycznie (`aiInsightSchema`).
 - **Dodatkowe pole `warnings`** (schemat pozwala dodawać pola). Trafiają tu informacje o wykrytej próbie prompt injection, o stronach odczytanych przez OCR i o stronach nieczytelnych.
@@ -54,14 +54,14 @@ worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, 
 - **Instrukcje dla modelu po angielsku, wartości w języku dokumentu.** Opisy schematu i teksty promptu są po angielsku i nie sugerują języka odpowiedzi. Prompt systemowy każe najpierw ustalić język dokumentu i w nim pisać wszystkie wartości.
 - **Zapasowy model.** Przy przeciążeniu (503) lub wyczerpaniu limitu (429) worker próbuje kolejnego modelu z `GEMINI_MODELS`.
 - **Build legacy pdf.js.** Nowoczesny build pdf.js 6 korzysta z najnowszych API przeglądarek. Wersja legacy działa też na starszych Safari i Chrome.
-- **Interfejs.** Jeden, jasny motyw niezależnie od ustawień systemu (spójny wygląd dla każdego użytkownika). Własna paleta „mineral jade” (chłodne szarości, nefrytowy akcent) z kontrastem tekstu min. 4,5:1. Informacja o wysyłce do AI stoi przy strefie wgrywania, a fokus przechodzi na nowy panel po zmianie widoku.
+- **Interfejs.** Jeden jasny motyw niezależnie od ustawień systemu, więc każdy użytkownik widzi aplikację tak samo. Własna paleta „mineral jade” (chłodne szarości, nefrytowy akcent) z kontrastem tekstu min. 4,5:1. Informacja o wysyłce do AI stoi przy strefie wgrywania, a fokus przechodzi na nowy panel po zmianie widoku.
 
 ### Bezpieczeństwo
 
 - Klucz API istnieje wyłącznie jako sekret Cloudflare (`wrangler secret put`). Nie ma go we frontendzie ani w repozytorium. Pliki `.env*` i `.dev.vars` są w `.gitignore`.
 - CORS: worker odpowiada tylko originom z `ALLOWED_ORIGINS` (w produkcji wyłącznie `https://zdunek101.github.io`; `localhost` tylko lokalnie przez `.dev.vars`). Żądania z innych domen i bez nagłówka `Origin` dostają 403.
-- Limity: 6 analiz na minutę z jednego IP i 12 na minutę łącznie (Cloudflare Rate Limiting; globalny limit chroni darmowy limit Gemini przed wyczerpaniem z wielu IP), maks. 400 tys. znaków tekstu, kontrola rozmiaru treści żądania, 10 MB na plik po stronie przeglądarki.
-- Prompt injection: treść PDF trafia do modelu w znacznikach `<document>` jako niezaufane dane. Znaczniki występujące w samej treści są usuwane. Instrukcja systemowa opisuje kategorie ataków (polecenia dla AI, fałszywe wiadomości systemowe i znaczniki, zmiana roli, żądania podania wartości niepopartych treścią) zamiast konkretnych fraz, zabrania ich wykonywania i każe zgłosić je w `warnings` z miejscem wystąpienia. Sprawdzone na różnych typach ataków, nie tylko na pliku testowym.
+- Limity: 6 analiz na minutę z jednego IP i 12 na minutę łącznie (Cloudflare Rate Limiting). Limit globalny chroni darmowy limit Gemini przed wyczerpaniem z wielu adresów IP. Tekst może mieć maks. 400 tys. znaków, a plik maks. 10 MB. Worker sprawdza też rozmiar treści żądania.
+- Prompt injection: treść PDF trafia do modelu w znacznikach `<document>` jako niezaufane dane. Znaczniki występujące w samej treści są usuwane. Instrukcja systemowa opisuje kategorie ataków zamiast konkretnych fraz: polecenia dla AI, fałszywe wiadomości systemowe i znaczniki, zmianę roli, żądania podania wartości niepopartych treścią. Model ma ich nie wykonywać i zgłosić je w `warnings` razem z miejscem wystąpienia. Ochronę sprawdziłem na kilku rodzajach ataków, nie tylko na pliku testowym.
 - Brak `dangerouslySetInnerHTML` (wymusza to reguła ESLint). Cała treść renderowana jest jako tekst.
 - Użytkownik widzi informację, że tekst trafia do zewnętrznego API AI.
 
@@ -80,7 +80,7 @@ npm run dev                       # frontend na http://localhost:5173/reader/
 | Zmienna           | Gdzie                                      | Opis                                                              |
 | ----------------- | ------------------------------------------ | ----------------------------------------------------------------- |
 | `VITE_API_URL`    | `.env.local` / zmienna repozytorium GitHub | adres workera                                                     |
-| `GEMINI_API_KEY`  | `.dev.vars` / `wrangler secret`            | klucz Google AI Studio — **sekret**                               |
+| `GEMINI_API_KEY`  | `.dev.vars` / `wrangler secret`            | klucz Google AI Studio (**sekret**)                               |
 | `GEMINI_MODELS`   | `wrangler.toml`                            | modele w kolejności użycia; kolejny przy przeciążeniu lub limicie |
 | `ALLOWED_ORIGINS` | `wrangler.toml` / `.dev.vars`              | dozwolone originy CORS, rozdzielone przecinkami                   |
 
@@ -94,9 +94,9 @@ Skrypty: `npm run lint`, `npm run format`, `npm test` (Vitest), `npm run build`.
 ## Znane ograniczenia
 
 - **OCR** działa w przeglądarce na maks. 5 stronach (ok. 1–3 s na stronę, pierwsze użycie pobiera ok. 10 MB danych językowych). Rozpoznaje tylko polski i angielski. Pieczątki i odręczne podpisy dają szum.
-- **Darmowy limit Gemini** ma ograniczoną liczbę zapytań na minutę i na dzień. Po jego wyczerpaniu użytkownik widzi komunikat z prośbą o ponowienie. W darmowym planie Google może wykorzystywać przesyłane treści, dlatego UI ostrzega przed wgrywaniem poufnych dokumentów.
-- **Liczba zdań w podsumowaniu** (3–5) jest wymagana w promptcie, ale nie jest walidowana. Skróty typu „sp. z o.o.” uniemożliwiają wiarygodne liczenie zdań.
+- **Darmowy limit Gemini** ma ograniczoną liczbę zapytań na minutę i na dzień. Po jego wyczerpaniu użytkownik widzi komunikat z prośbą o ponowienie. W darmowym planie Google może wykorzystywać przesyłane treści, dlatego aplikacja ostrzega przed wgrywaniem poufnych dokumentów.
+- **Liczba zdań w podsumowaniu** (3–5) jest wymagana w prompcie, ale nie jest walidowana. Skróty typu „sp. z o.o.” uniemożliwiają wiarygodne liczenie zdań.
 - **Dokumenty bardzo długie** (powyżej 400 tys. znaków) są odrzucane. Przy podziale na fragmenty podsumowanie całości powstaje ze streszczeń fragmentów.
 - **Tabele** trafiają do modelu jako tekst liniowy, bez struktury kolumn.
-- **Limit żądań** jest liczony w obrębie lokalizacji Cloudflare, więc jest przybliżony. Nagłówek `Origin` da się podrobić poza przeglądarką; przed nadużyciami chronią limity, a nie CORS.
+- **Limit żądań** jest liczony w obrębie lokalizacji Cloudflare, więc jest przybliżony. Nagłówek `Origin` da się podrobić poza przeglądarką, dlatego przed nadużyciami chronią limity, a nie CORS.
 - **Modele `-latest`** to aliasy Google, które mogą zostać przepięte na nowszą wersję. W zamian nie wygasają razem z konkretną wersją modelu.

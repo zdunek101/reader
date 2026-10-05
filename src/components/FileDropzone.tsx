@@ -17,7 +17,7 @@ export function FileDropzone({ onFileSelected }: FileDropzoneProps) {
     if (file) onFileSelected(file);
   };
 
-  // Przejście kursora nad element potomny też wywołuje dragleave — ignorujemy je, by obramowanie nie migało.
+  // Przejście kursora nad element potomny też wywołuje dragleave. Ignorujemy je, żeby obramowanie nie migało.
   const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
     const target = event.relatedTarget;
     if (!(target instanceof Node && event.currentTarget.contains(target))) setIsDragging(false);

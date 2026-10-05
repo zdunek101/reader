@@ -69,7 +69,7 @@ export const insightSchema = z.object({
     ),
 });
 
-/** Część wyniku generowana przez model — nazwę pliku i liczbę stron uzupełnia backend. */
+/** Część wyniku generowana przez model. Nazwę pliku i liczbę stron uzupełnia backend. */
 export const aiInsightSchema = insightSchema.extend({
   document: documentSchema.omit({ fileName: true, pages: true }),
 });

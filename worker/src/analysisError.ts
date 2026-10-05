@@ -9,7 +9,7 @@ const ERROR_DETAILS = {
   },
   AI_QUOTA_EXCEEDED: {
     status: 429,
-    message: 'Wyczerpano chwilowo darmowy limit usługi AI. Spróbuj ponownie za minutę.',
+    message: 'Chwilowo wyczerpał się darmowy limit usługi AI. Spróbuj ponownie za minutę.',
   },
   AI_UNAVAILABLE: {
     status: 502,
@@ -17,7 +17,7 @@ const ERROR_DETAILS = {
   },
   INVALID_AI_RESPONSE: {
     status: 502,
-    message: 'AI zwróciło wynik niezgodny ze schematem (także po ponownej próbie).',
+    message: 'Usługa AI dwa razy zwróciła wynik w nieprawidłowym formacie. Spróbuj ponownie.',
   },
   INTERNAL: { status: 500, message: 'Wystąpił nieoczekiwany błąd serwera.' },
 } as const;

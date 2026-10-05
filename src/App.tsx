@@ -26,8 +26,8 @@ export function App() {
           PDF Insight
         </h1>
         <p className="lead">
-          Wgraj plik PDF — otrzymasz krótkie podsumowanie i uporządkowane dane do pobrania jako
-          JSON.
+          Wgraj plik PDF, a otrzymasz krótkie podsumowanie i uporządkowane dane do pobrania w
+          formacie JSON.
         </p>
       </header>
 

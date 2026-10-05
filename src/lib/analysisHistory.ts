@@ -39,7 +39,7 @@ function saveHistory(history: HistoryEntry[]): HistoryEntry[] {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
   } catch {
-    // Brak dostępu do localStorage (np. tryb prywatny) — historia działa tylko w tej sesji.
+    // Brak dostępu do localStorage (np. tryb prywatny): historia działa tylko w tej sesji.
   }
   return history;
 }

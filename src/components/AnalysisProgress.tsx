@@ -65,7 +65,7 @@ export function AnalysisProgress({ fileName, step, withOcr, onCancel }: Analysis
         })}
       </ol>
       <p className="panel__hint">
-        Zwykle trwa to kilkanaście sekund; skany rozpoznawane przez OCR — dłużej.
+        Analiza trwa zwykle kilkanaście sekund. Skany rozpoznawane przez OCR wymagają więcej czasu.
       </p>
       <button type="button" className="button" onClick={onCancel}>
         Anuluj

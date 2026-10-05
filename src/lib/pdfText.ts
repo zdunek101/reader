@@ -71,7 +71,7 @@ export function describeExtractionIssues({ ocrPages, unreadablePages }: PdfText)
       ocrPages.length === 1
         ? `Strona ${ocrPages[0]} to skan odczytany`
         : `Strony ${ocrPages.join(', ')} to skany odczytane`;
-    warnings.push(`${scans} przez OCR — tekst może zawierać błędy rozpoznawania.`);
+    warnings.push(`${scans} przez OCR. Tekst może zawierać błędy rozpoznawania.`);
   }
   if (unreadablePages.length > 0) {
     warnings.push(`Nie udało się odczytać tekstu ze stron: ${unreadablePages.join(', ')}.`);
@@ -87,7 +87,7 @@ async function openPdf(loadingTask: PDFDocumentLoadingTask): Promise<PDFDocument
     throw new PdfReadError(
       isPasswordProtected
         ? 'Plik PDF jest zabezpieczony hasłem. Zdejmij zabezpieczenie i spróbuj ponownie.'
-        : 'Nie udało się odczytać pliku PDF — plik może być uszkodzony.',
+        : 'Nie udało się odczytać pliku PDF. Plik może być uszkodzony.',
     );
   }
 }
@@ -95,8 +95,8 @@ async function openPdf(loadingTask: PDFDocumentLoadingTask): Promise<PDFDocument
 async function readPageText(pdf: PDFDocumentProxy, pageNumber: number): Promise<string> {
   const page = await pdf.getPage(pageNumber);
   const content = await page.getTextContent();
-  // pdf.js zwraca spacje jako osobne elementy, a polskie znaki często jako osobne glify —
-  // łączymy bez separatora, żeby nie rozbijać słów („Zamawiaj ą cy”).
+  // pdf.js zwraca spacje jako osobne elementy, a polskie znaki często jako osobne glify,
+  // dlatego łączymy je bez separatora, żeby nie rozbijać słów („Zamawiaj ą cy”).
   return content.items
     .filter(isTextItem)
     .map((item) => item.str + (item.hasEOL ? '\n' : ''))

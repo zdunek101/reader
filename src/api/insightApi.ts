@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { insightSchema, type AnalyzeRequest, type Insight } from '../lib/schema';
 
 const API_URL = import.meta.env.VITE_API_URL;
-/** Długie dokumenty to kilka wywołań AI — dajemy zapas ponad limit 30 s z briefu. */
+/** Długie dokumenty wymagają kilku wywołań AI, dlatego limit jest wyższy niż 30 s z briefu. */
 const REQUEST_TIMEOUT_MS = 90_000;
 
 const errorResponseSchema = z.object({ error: z.object({ message: z.string() }) });
@@ -14,7 +14,7 @@ export async function requestInsight(
   request: AnalyzeRequest,
   signal: AbortSignal,
 ): Promise<Insight> {
-  if (!API_URL) throw new ApiError('Brak konfiguracji adresu API (VITE_API_URL).');
+  if (!API_URL) throw new ApiError('Aplikacja nie ma skonfigurowanego adresu API (VITE_API_URL).');
 
   let response: Response;
   try {
@@ -43,6 +43,7 @@ export async function requestInsight(
   }
 
   const insight = insightSchema.safeParse(body);
-  if (!insight.success) throw new ApiError('Wynik analizy jest niezgodny ze schematem danych.');
+  if (!insight.success)
+    throw new ApiError('Wynik analizy ma nieprawidłowy format. Spróbuj ponownie.');
   return insight.data;
 }

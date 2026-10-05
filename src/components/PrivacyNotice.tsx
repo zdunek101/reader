@@ -5,10 +5,10 @@ export function PrivacyNotice() {
         Zanim wgrasz plik
       </p>
       <p>
-        Tekst odczytany z pliku jest wysyłany przez nasz serwer do zewnętrznego API AI (Google
-        Gemini) w celu analizy. Serwer niczego nie zapisuje, ale w darmowym planie Google może
-        wykorzystywać przesłane treści — <strong>nie wgrywaj dokumentów poufnych</strong>. Historia
-        analiz jest przechowywana wyłącznie w Twojej przeglądarce.
+        Tekst odczytany z pliku trafia przez nasz serwer do zewnętrznej usługi AI (Google Gemini),
+        która go analizuje. Serwer niczego nie zapisuje, ale w darmowym planie Google może
+        wykorzystywać przesłane treści, dlatego <strong>nie wgrywaj poufnych dokumentów</strong>.
+        Historia analiz zostaje wyłącznie w Twojej przeglądarce.
       </p>
     </aside>
   );

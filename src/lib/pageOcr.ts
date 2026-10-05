@@ -1,6 +1,6 @@
 import type { PDFPageProxy } from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-/** Powiększenie renderu strony — wyższa rozdzielczość poprawia jakość OCR. */
+/** Powiększenie renderu strony. Wyższa rozdzielczość poprawia jakość OCR. */
 const RENDER_SCALE = 2;
 const OCR_LANGUAGES = ['pol', 'eng'];
 

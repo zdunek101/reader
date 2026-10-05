@@ -1,5 +1,5 @@
 /*
- * Tokeny kolorów — paleta „mineral jade”: chłodne, lekko zielonkawe szarości
+ * Tokeny kolorów. Paleta „mineral jade”: chłodne, lekko zielonkawe szarości
  * i nefrytowy akcent. Aplikacja ma jeden, jasny motyw niezależnie od ustawień systemu.
  * Wszystkie pary tekst/tło mają kontrast min. 4,5:1, obramowania kontrolek min. 3:1.
  */
@@ -61,7 +61,7 @@ h3 {
   outline-offset: 2px;
 }
 
-/* Nagłówki dostają fokus programowo (zmiana widoku) — obrys byłby mylący. */
+/* Nagłówki dostają fokus programowo (zmiana widoku), więc obrys byłby mylący. */
 [tabindex='-1']:focus {
   outline: none;
 }
@@ -300,7 +300,7 @@ main {
   gap: 12px;
 }
 
-/* Siatka komórek z cienkimi liniami — obramowanie rysuje cień, który na krawędziach przycina overflow. */
+/* Siatka komórek z cienkimi liniami. Obramowanie rysuje cień, który na krawędziach przycina overflow. */
 .flow,
 .meta {
   display: grid;
@@ -473,7 +473,7 @@ main {
   border-color: var(--color-accent-border);
 }
 
-/* Znacznik „✓” rysowany obramowaniem — ostrzejszy niż znak z fontu. */
+/* Znacznik „✓” rysowany obramowaniem, ostrzejszy niż znak z fontu. */
 .progress-steps__item--done .progress-steps__marker::after {
   position: absolute;
   top: 2px;

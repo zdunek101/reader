@@ -20,8 +20,8 @@ export function InsightDetails({ insight }: { insight: Insight }) {
 
       <dl className="meta">
         <MetaItem label="Rodzaj">{DOCUMENT_TYPE_LABELS[document.type]}</MetaItem>
-        <MetaItem label="Tytuł">{document.title ?? '—'}</MetaItem>
-        <MetaItem label="Data">{document.date ? formatDate(document.date) : '—'}</MetaItem>
+        <MetaItem label="Tytuł">{document.title ?? 'brak'}</MetaItem>
+        <MetaItem label="Data">{document.date ? formatDate(document.date) : 'brak'}</MetaItem>
         <MetaItem label="Język">{formatLanguage(document.language)}</MetaItem>
         <MetaItem label="Strony">{document.pages}</MetaItem>
       </dl>
