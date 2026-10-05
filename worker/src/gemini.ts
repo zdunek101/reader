@@ -31,14 +31,14 @@ export async function generateStructured<T>(
   { systemInstruction, prompt }: StructuredRequest,
   schema: z.ZodType<T>,
 ): Promise<T> {
-  const schemaPrompt = `${prompt}\n\nZwróć wyłącznie JSON zgodny z JSON Schema:\n${JSON.stringify(z.toJSONSchema(schema))}`;
+  const schemaPrompt = `${prompt}\n\nReturn only JSON matching this JSON Schema:\n${JSON.stringify(z.toJSONSchema(schema))}`;
   let correction = '';
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     const responseText = await callGemini(env, systemInstruction, schemaPrompt + correction);
     const result = schema.safeParse(parseJson(responseText));
     if (result.success) return result.data;
-    correction = `\n\nPoprzednia odpowiedź była niezgodna ze schematem:\n${z.prettifyError(result.error)}\nPopraw ją i zwróć pełny JSON.`;
+    correction = `\n\nYour previous response did not match the schema:\n${z.prettifyError(result.error)}\nFix it and return the complete JSON.`;
   }
 
   throw new AnalysisError('INVALID_AI_RESPONSE');

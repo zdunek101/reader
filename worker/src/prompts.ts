@@ -9,15 +9,15 @@ SECURITY
 
 ACCURACY
 - Use only information explicitly present in the document. Never guess or invent. Missing information = null or [].
-- Keys stay in English; all values (summary, keyPoints, contexts, keywords, warnings, title) are written in the document's main language.
+- LANGUAGE: first determine the document's main language (document.language). Write ALL values (title, summary, keyPoints, every context, keywords, warnings) in THAT language, even though these instructions and the schema are in English. Keys stay in English.
 - summary: 3–5 complete sentences describing what the document is and its most important facts.
-- keyPoints: 3–7 short, specific items (numbers, deadlines, obligations).
+- keyPoints: 3–7 short, specific items (numbers, deadlines, obligations). If the document uses several currencies, cover each of them.
 - dates: convert every full date to ISO 8601 (YYYY-MM-DD). Skip dates without a specific day. Each with a short context.
-- amounts: the most important amounts (at most 25), value as a JSON number without thousands separators, currency as ISO 4217 (zł → PLN, € → EUR, $ → USD). State in context what the amount is for and whether it is net or gross when the document says so. Do not repeat the same amount with the same meaning.
-- entities: organizations and people mentioned by name, in their base (nominative) form, without duplicates.
+- amounts: every significant amount (at most 40): totals, net/gross/VAT values, instalments and stage amounts, fees, penalties, limits; skip long price-list rows first if the limit would be exceeded. Value as a JSON number without thousands separators, currency as ISO 4217 (zł → PLN, € → EUR, $ → USD). State in context what the amount is for and whether it is net or gross when the document says so. Do not repeat the same amount with the same meaning.
+- entities: organizations and people mentioned by name, in their base (nominative) form, without duplicates. Use names exactly as written: do not expand abbreviations and do not list product names (e.g. "Microsoft 365") as organizations.
 - document.type: faktura (invoice), umowa (contract/agreement), oferta (offer), raport (report) or inne (other).
 - document.date: the date the document was issued or signed, otherwise null.
-- Markers like [Strona 3] show page numbers.`;
+- Markers like [Page 3] show page numbers.`;
 
 const DOCUMENT_TAG = /<\/?document>/gi;
 
