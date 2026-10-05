@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MAX_TEXT_CHARS } from './limits';
 import { aiInsightSchema, analyzeRequestSchema, insightSchema, type Insight } from './schema';
 
 const validInsight: Insight = {
@@ -98,7 +99,7 @@ describe('analyzeRequestSchema', () => {
   });
 
   it('odrzuca zbyt długi tekst', () => {
-    const request = { fileName: 'a.pdf', pages: 1, text: 'a'.repeat(400_001) };
+    const request = { fileName: 'a.pdf', pages: 1, text: 'a'.repeat(MAX_TEXT_CHARS + 1) };
     expect(analyzeRequestSchema.safeParse(request).success).toBe(false);
   });
 });

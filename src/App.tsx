@@ -57,7 +57,9 @@ export function App() {
             onReset={reset}
           />
         )}
-        {state.status === 'success' && <InsightView insight={state.insight} onReset={reset} />}
+        {state.status === 'success' && (
+          <InsightView key={state.shownAt} insight={state.insight} onReset={reset} />
+        )}
 
         <HistoryList
           entries={history}

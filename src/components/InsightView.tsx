@@ -19,7 +19,7 @@ interface InsightViewProps {
 export function InsightView({ insight, onReset }: InsightViewProps) {
   const [activeTab, setActiveTab] = useState<TabId>('details');
   const [copyStatus, setCopyStatus] = useState('');
-  const titleRef = useAutoFocus<HTMLHeadingElement>(insight);
+  const titleRef = useAutoFocus<HTMLHeadingElement>();
 
   const copyJson = async () => {
     try {

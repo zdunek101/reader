@@ -39,14 +39,19 @@ export async function extractPdfText(file: File, onOcrStart: () => void): Promis
     }
 
     const scannedPages = pageNumbersWhere(pageTexts, (text) => text.length < MIN_PAGE_TEXT_CHARS);
-    const ocrPages = scannedPages.slice(0, MAX_OCR_PAGES);
-    if (ocrPages.length > 0) {
+    const pagesToRecognize = scannedPages.slice(0, MAX_OCR_PAGES);
+    if (pagesToRecognize.length > 0) {
       onOcrStart();
-      const pages = await Promise.all(ocrPages.map((pageNumber) => pdf.getPage(pageNumber)));
-      const recognized = await recognizePagesText(pages);
-      ocrPages.forEach((pageNumber, index) => {
-        pageTexts[pageNumber - 1] = recognized[index] ?? '';
-      });
+      try {
+        const pages = await Promise.all(pagesToRecognize.map((number) => pdf.getPage(number)));
+        const recognized = await recognizePagesText(pages);
+        pagesToRecognize.forEach((pageNumber, index) => {
+          pageTexts[pageNumber - 1] = recognized[index] ?? '';
+        });
+      } catch {
+        // OCR niedostępny (np. brak sieci do pobrania danych językowych): strony zostają
+        // nieczytelne, a reszta dokumentu jest analizowana normalnie.
+      }
     }
 
     const text = pageTexts
@@ -55,7 +60,7 @@ export async function extractPdfText(file: File, onOcrStart: () => void): Promis
     return {
       pages: pdf.numPages,
       text,
-      ocrPages,
+      ocrPages: pagesToRecognize.filter((pageNumber) => pageTexts[pageNumber - 1]),
       unreadablePages: pageNumbersWhere(pageTexts, (pageText) => pageText.length === 0),
     };
   } finally {

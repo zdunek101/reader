@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ApiError, requestInsight } from '../api/insightApi';
 import { validatePdfFile } from '../lib/fileValidation';
+import { MAX_TEXT_CHARS } from '../lib/limits';
 import { describeExtractionIssues, extractPdfText, PdfReadError } from '../lib/pdfText';
 import type { Insight } from '../lib/schema';
 
 export type AnalysisStep = 'reading' | 'ocr' | 'analyzing';
 
-export type AnalysisState =
+type AnalysisState =
   | { status: 'idle' }
   | { status: 'processing'; fileName: string; step: AnalysisStep; withOcr: boolean }
   | { status: 'error'; message: string; canRetry: boolean }
-  | { status: 'success'; insight: Insight };
+  // `shownAt` odróżnia kolejne wyświetlenia wyniku, żeby widok zaczynał od czystego stanu.
+  | { status: 'success'; insight: Insight; shownAt: number };
 
 /** Przepływ: walidacja pliku → odczyt tekstu (z OCR) → analiza AI → wynik. */
 export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
@@ -28,19 +30,17 @@ export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
       lastFileRef.current = file;
 
       const validationError = await validatePdfFile(file);
+      if (controller.signal.aborted) return;
       if (validationError) {
         setState({ status: 'error', message: validationError, canRetry: false });
         return;
       }
 
+      let withOcr = false;
       const setStep = (step: AnalysisStep) => {
         if (controller.signal.aborted) return;
-        setState((previous) => ({
-          status: 'processing',
-          fileName: file.name,
-          step,
-          withOcr: step === 'ocr' || (previous.status === 'processing' && previous.withOcr),
-        }));
+        withOcr ||= step === 'ocr';
+        setState({ status: 'processing', fileName: file.name, step, withOcr });
       };
 
       try {
@@ -48,6 +48,11 @@ export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
         const pdfText = await extractPdfText(file, () => setStep('ocr'));
         if (pdfText.unreadablePages.length === pdfText.pages) {
           throw new PdfReadError('W pliku nie znaleziono tekstu do analizy.');
+        }
+        if (pdfText.text.length > MAX_TEXT_CHARS) {
+          throw new PdfReadError(
+            'Dokument jest zbyt długi do analizy. Można przeanalizować maksymalnie ok. 150 stron tekstu.',
+          );
         }
 
         setStep('analyzing');
@@ -62,7 +67,7 @@ export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
           ...insight,
           warnings: [...insight.warnings, ...describeExtractionIssues(pdfText)],
         };
-        setState({ status: 'success', insight: result });
+        setState({ status: 'success', insight: result, shownAt: Date.now() });
         onAnalyzed(result);
       } catch (error) {
         if (controller.signal.aborted) return;
@@ -70,7 +75,8 @@ export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
         setState({
           status: 'error',
           message: isKnownError ? error.message : 'Wystąpił nieoczekiwany błąd. Spróbuj ponownie.',
-          canRetry: true,
+          // Ponowienie nie pomoże przy wadzie pliku ani przy odrzuconej treści żądania.
+          canRetry: error instanceof ApiError ? error.retryable : !(error instanceof PdfReadError),
         });
       }
     },
@@ -88,7 +94,7 @@ export function usePdfAnalysis(onAnalyzed: (insight: Insight) => void) {
 
   const showInsight = useCallback((insight: Insight) => {
     abortControllerRef.current?.abort();
-    setState({ status: 'success', insight });
+    setState({ status: 'success', insight, shownAt: Date.now() });
   }, []);
 
   return { state, analyze, retry, reset, showInsight };
