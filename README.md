@@ -8,18 +8,18 @@ Aplikacja webowa, która wczytuje plik PDF, tworzy jego krótkie podsumowanie i 
 
 ## Funkcje
 
-| ID   | Wymaganie         | Realizacja                                                                                |
-| ---- | ----------------- | ----------------------------------------------------------------------------------------- |
-| F-01 | Wgrywanie PDF     | drag & drop i wybór pliku; walidacja sygnatury `%PDF-` i rozmiaru (maks. 10 MB)           |
-| F-02 | Odczyt tekstu     | `pdfjs-dist` w przeglądarce, z numerami stron (`[Page N]`)                                |
-| F-03 | Podsumowanie      | 3–5 zdań w języku dokumentu, tylko fakty z tekstu                                         |
-| F-04 | Dane strukturalne | schemat Zod walidowany na backendzie i ponownie na frontendzie przed wyświetleniem        |
-| F-05 | Widok i eksport   | czytelne sekcje, zakładka z podglądem JSON, pobranie `.json`, kopiowanie                  |
-| F-06 | Stany interfejsu  | stan pusty, postęp z krokami, błąd z „Spróbuj ponownie”, anulowanie                       |
-| F-07 | Publiczne demo    | GitHub Pages, deploy przez GitHub Actions                                                 |
-| F-08 | Długie dokumenty  | podział na fragmenty po 150 tys. znaków (maks. 3) → analiza równoległa → scalenie wyników |
-| F-09 | Historia analiz   | 10 ostatnich wyników w `localStorage`, walidowanych przy odczycie                         |
-| F-10 | OCR               | strony bez warstwy tekstowej rozpoznawane przez `tesseract.js` (pol + eng)                |
+| ID   | Wymaganie         | Realizacja                                                                                   |
+| ---- | ----------------- | -------------------------------------------------------------------------------------------- |
+| F-01 | Wgrywanie PDF     | drag & drop i wybór pliku; walidacja sygnatury `%PDF-` i rozmiaru (maks. 10 MB)              |
+| F-02 | Odczyt tekstu     | `pdfjs-dist` w przeglądarce, z numerami stron (`[Page N]`)                                   |
+| F-03 | Podsumowanie      | 3–5 zdań w języku dokumentu, tylko fakty z tekstu                                            |
+| F-04 | Dane strukturalne | schemat Zod walidowany na backendzie i ponownie na frontendzie przed wyświetleniem           |
+| F-05 | Widok i eksport   | czytelne sekcje, zakładka z podglądem JSON, pobranie `.json`, kopiowanie                     |
+| F-06 | Stany interfejsu  | stan pusty, postęp z krokami, błąd z „Spróbuj ponownie”, anulowanie                          |
+| F-07 | Publiczne demo    | GitHub Pages, deploy przez GitHub Actions                                                    |
+| F-08 | Długie dokumenty  | podział na fragmenty po 150 tys. znaków (zwykle 1–3) → analiza równoległa → scalenie wyników |
+| F-09 | Historia analiz   | 10 ostatnich wyników w `localStorage`, walidowanych przy odczycie                            |
+| F-10 | OCR               | strony bez warstwy tekstowej rozpoznawane przez `tesseract.js` (pol + eng)                   |
 
 ## Architektura
 
@@ -52,7 +52,8 @@ worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, 
 - **Gemini Flash przez Google AI Studio.** Darmowy limit nie wymaga karty płatniczej, więc nie ma ryzyka kosztów. Duże okno kontekstu pozwala przeanalizować typowy dokument jednym wywołaniem.
 - **Bez routera.** Aplikacja ma jeden widok, więc problem z odświeżaniem podstron na GitHub Pages nie występuje.
 - **Instrukcje dla modelu po angielsku, wartości w języku dokumentu.** Opisy schematu i teksty promptu są po angielsku i nie sugerują języka odpowiedzi. Prompt systemowy każe najpierw ustalić język dokumentu i w nim pisać wszystkie wartości.
-- **Zapasowy model.** Przy przeciążeniu (503) lub wyczerpaniu limitu (429) worker próbuje kolejnego modelu z `GEMINI_MODELS`.
+- **Zapasowy model.** Przy przeciążeniu (503) lub wyczerpaniu limitu (429) worker próbuje kolejnego modelu z `GEMINI_MODELS`. Inne błędy dotyczą wszystkich modeli, więc nie uruchamiają zapasowego.
+- **Wspólny budżet czasu.** Cała analiza w workerze, łącznie z ponowną próbą i zapasowym modelem, ma 40 s (`ANALYSIS_TIMEOUT_MS`). Przeglądarka czeka 5 s dłużej, więc zawsze dostaje komunikat backendu, a backend nie zużywa limitu AI po tym, jak użytkownik przestał czekać.
 - **Build legacy pdf.js.** Nowoczesny build pdf.js 6 korzysta z najnowszych API przeglądarek. Wersja legacy działa też na starszych Safari i Chrome.
 - **Interfejs.** Jeden jasny motyw niezależnie od ustawień systemu, więc każdy użytkownik widzi aplikację tak samo. Własna paleta „mineral jade” (chłodne szarości, nefrytowy akcent) z kontrastem tekstu min. 4,5:1. Informacja o wysyłce do AI stoi przy strefie wgrywania, a fokus przechodzi na nowy panel po zmianie widoku.
 
@@ -60,7 +61,7 @@ worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, 
 
 - Klucz API istnieje wyłącznie jako sekret Cloudflare (`wrangler secret put`). Nie ma go we frontendzie ani w repozytorium. Pliki `.env*` i `.dev.vars` są w `.gitignore`.
 - CORS: worker odpowiada tylko originom z `ALLOWED_ORIGINS` (w produkcji wyłącznie `https://zdunek101.github.io`; `localhost` tylko lokalnie przez `.dev.vars`). Żądania z innych domen i bez nagłówka `Origin` dostają 403.
-- Limity: 6 analiz na minutę z jednego IP i 12 na minutę łącznie (Cloudflare Rate Limiting). Limit globalny chroni darmowy limit Gemini przed wyczerpaniem z wielu adresów IP. Tekst może mieć maks. 400 tys. znaków, a plik maks. 10 MB. Worker sprawdza też rozmiar treści żądania.
+- Limity: 6 analiz na minutę z jednego IP i 12 na minutę łącznie (Cloudflare Rate Limiting). Limit globalny ogranicza ruch z wielu adresów IP naraz. Liczy analizy, a nie wywołania AI: typowa analiza to 1–2 wywołania, długi dokument kilka. Tekst może mieć maks. 400 tys. znaków, a plik maks. 10 MB. Worker sprawdza też rozmiar treści żądania.
 - Prompt injection: treść PDF trafia do modelu w znacznikach `<document>` jako niezaufane dane. Znaczniki występujące w samej treści są usuwane. Instrukcja systemowa opisuje kategorie ataków zamiast konkretnych fraz: polecenia dla AI, fałszywe wiadomości systemowe i znaczniki, zmianę roli, żądania podania wartości niepopartych treścią. Model ma ich nie wykonywać i zgłosić je w `warnings` razem z miejscem wystąpienia. Ochronę sprawdziłem na kilku rodzajach ataków, nie tylko na pliku testowym.
 - Brak `dangerouslySetInnerHTML` (wymusza to reguła ESLint). Cała treść renderowana jest jako tekst.
 - Użytkownik widzi informację, że tekst trafia do zewnętrznego API AI.

@@ -13,7 +13,7 @@ GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 /** Strona z mniejszą liczbą znaków traktowana jest jako skan bez warstwy tekstowej. */
 const MIN_PAGE_TEXT_CHARS = 20;
-/** OCR działa w przeglądarce (ok. 3–5 s na stronę), więc ograniczamy liczbę stron. */
+/** OCR działa w przeglądarce (ok. 1–3 s na stronę), więc ograniczamy liczbę stron. */
 const MAX_OCR_PAGES = 5;
 
 export interface PdfText {
