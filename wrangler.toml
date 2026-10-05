@@ -1,0 +1,16 @@
+name = "pdf-insight-api"
+main = "worker/src/index.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Lista dozwolonych originów (CORS), rozdzielona przecinkami.
+ALLOWED_ORIGINS = "https://zdunek101.github.io,http://localhost:5173"
+GEMINI_MODEL = "gemini-flash-latest"
+
+# Limit żądań na adres IP (darmowy plan Cloudflare).
+[[ratelimits]]
+name = "ANALYZE_RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 6, period = 60 }
+
+# Sekret GEMINI_API_KEY ustawiany poleceniem: npx wrangler secret put GEMINI_API_KEY
