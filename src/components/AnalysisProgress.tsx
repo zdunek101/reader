@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useAutoFocus } from '../hooks/useAutoFocus';
 import type { AnalysisStep } from '../hooks/usePdfAnalysis';
 
@@ -20,11 +21,26 @@ export function AnalysisProgress({ fileName, step, withOcr, onCancel }: Analysis
   const titleRef = useAutoFocus<HTMLHeadingElement>();
   const visibleSteps = STEPS.filter(({ id }) => withOcr || id !== 'ocr');
   const currentIndex = visibleSteps.findIndex(({ id }) => id === step);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  // Licznik startuje przy każdej analizie, bo panel montuje się od nowa.
+  useEffect(() => {
+    const startedAt = Date.now();
+    const timer = setInterval(
+      () => setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000)),
+      1000,
+    );
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <section className="panel" aria-busy="true" aria-labelledby="progress-title">
-      <p className="label">
+      <p className="label progress-label">
         Etap {currentIndex + 1} z {visibleSteps.length}
+        {/* role="timer" nie jest ogłaszany przez czytniki co sekundę. */}
+        <span role="timer" aria-label={`Czas analizy: ${elapsedSeconds} s`}>
+          {elapsedSeconds} s
+        </span>
       </p>
       <h2 ref={titleRef} tabIndex={-1} id="progress-title" className="panel__title">
         Analizuję: <span className="file-name">{fileName}</span>

@@ -127,6 +127,12 @@ h3 {
   text-transform: uppercase;
 }
 
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-variant-numeric: tabular-nums;
+}
+
 .label--error {
   color: var(--color-error);
 }
