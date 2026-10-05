@@ -133,6 +133,10 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
+.progress-label [role='timer'] {
+  text-transform: none;
+}
+
 .label--error {
   color: var(--color-error);
 }
