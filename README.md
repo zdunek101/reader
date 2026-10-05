@@ -54,7 +54,7 @@ worker/src/     backend: routing i bezpieczeństwo, wywołanie Gemini, prompty, 
 - **Instrukcje dla modelu po angielsku, wartości w języku dokumentu.** Opisy schematu i teksty promptu są po angielsku i nie sugerują języka odpowiedzi. Prompt systemowy każe najpierw ustalić język dokumentu i w nim pisać wszystkie wartości.
 - **Zapasowy model.** Przy przeciążeniu (503) lub wyczerpaniu limitu (429) worker próbuje kolejnego modelu z `GEMINI_MODELS`.
 - **Build legacy pdf.js.** Nowoczesny build pdf.js 6 korzysta z najnowszych API przeglądarek. Wersja legacy działa też na starszych Safari i Chrome.
-- **Interfejs.** Jasny motyw domyślny, ciemny według ustawień systemu. Własna paleta „mineral jade” (chłodne szarości, nefrytowy akcent) z kontrastem tekstu min. 4,5:1. Informacja o wysyłce do AI stoi przy strefie wgrywania, a fokus przechodzi na nowy panel po zmianie widoku.
+- **Interfejs.** Jeden, jasny motyw niezależnie od ustawień systemu (spójny wygląd dla każdego użytkownika). Własna paleta „mineral jade” (chłodne szarości, nefrytowy akcent) z kontrastem tekstu min. 4,5:1. Informacja o wysyłce do AI stoi przy strefie wgrywania, a fokus przechodzi na nowy panel po zmianie widoku.
 
 ### Bezpieczeństwo
 
@@ -100,4 +100,3 @@ Skrypty: `npm run lint`, `npm run format`, `npm test` (Vitest), `npm run build`.
 - **Tabele** trafiają do modelu jako tekst liniowy, bez struktury kolumn.
 - **Limit żądań** jest liczony w obrębie lokalizacji Cloudflare, więc jest przybliżony. Nagłówek `Origin` da się podrobić poza przeglądarką; przed nadużyciami chronią limity, a nie CORS.
 - **Modele `-latest`** to aliasy Google, które mogą zostać przepięte na nowszą wersję. W zamian nie wygasają razem z konkretną wersją modelu.
-- **Zrzut ekranu** pokazuje jasny motyw. Ciemny włącza się automatycznie przy ciemnym motywie systemu.

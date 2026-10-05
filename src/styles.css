@@ -1,7 +1,6 @@
 /*
  * Tokeny kolorów — paleta „mineral jade”: chłodne, lekko zielonkawe szarości
- * i nefrytowy akcent (w ciemnym motywie miętowy). Jasny motyw jest domyślny;
- * ciemny włącza się według ustawień systemu (prefers-color-scheme).
+ * i nefrytowy akcent. Aplikacja ma jeden, jasny motyw niezależnie od ustawień systemu.
  * Wszystkie pary tekst/tło mają kontrast min. 4,5:1, obramowania kontrolek min. 3:1.
  */
 :root {
@@ -37,34 +36,6 @@
   color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: #0c1412;
-    --color-surface: #121c19;
-    --color-surface-muted: #182521;
-    --color-border: #24332e;
-    --color-border-control: #30423c;
-    --color-border-strong: #5f7570;
-    --color-text: #e3ece8;
-    --color-text-muted: #9cb0a8;
-    --color-accent: #5ad1b0;
-    --color-accent-hover: #79dcc0;
-    --color-accent-border: #5ad1b0;
-    --color-accent-soft: rgb(90 209 176 / 10%);
-    --color-accent-ink: #6fdcbd;
-    --color-on-accent: #062019;
-    --color-focus: #6fdcbd;
-    --color-error: #ff8f85;
-    --color-error-soft: rgb(255 143 133 / 8%);
-    --color-warning: #f2c46b;
-    --color-warning-soft: rgb(242 196 107 / 8%);
-    --color-warning-border: rgb(242 196 107 / 40%);
-    --shadow-panel: none;
-
-    color-scheme: dark;
-  }
 }
 
 *,
