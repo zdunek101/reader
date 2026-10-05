@@ -84,7 +84,7 @@ Skrypty: `npm run lint`, `npm run format`, `npm test` (Vitest), `npm run build`.
 
 ## Wdrożenie
 
-1. **Backend:** `npx wrangler login`, potem `npx wrangler secret put GEMINI_API_KEY`, potem `npm run worker:deploy`. Adres workera ma postać `https://pdf-insight-api.<konto>.workers.dev`.
+1. **Backend:** `npx wrangler login`, potem `npx wrangler secret put GEMINI_API_KEY`, potem `npm run worker:deploy`. Adres workera ma postać `https://reader-api.<konto>.workers.dev`.
 2. **Frontend:** w repozytorium GitHub ustaw _Settings → Secrets and variables → Actions → Variables_ `VITE_API_URL` na adres workera. Następnie w _Settings → Pages → Source_ wybierz „GitHub Actions”. Każdy push na `main` uruchamia kolejno lint, testy, build i deploy.
 
 ## Znane ograniczenia

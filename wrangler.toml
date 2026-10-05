@@ -1,4 +1,4 @@
-name = "pdf-insight-api"
+name = "reader-api"
 main = "worker/src/index.ts"
 compatibility_date = "2026-10-01"
 
