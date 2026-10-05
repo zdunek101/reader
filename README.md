@@ -2,7 +2,7 @@
 
 Aplikacja webowa, która wczytuje plik PDF, tworzy jego krótkie podsumowanie i zamienia treść w uporządkowane dane JSON.
 
-**Demo:** https://zdunek101.github.io/pdf-insight/
+**Demo:** https://zdunek101.github.io/reader/
 
 ![Zrzut ekranu PDF Insight](docs/screenshot.png)
 
@@ -70,7 +70,7 @@ npm install
 cp .env.example .env.local        # VITE_API_URL=http://localhost:8787
 echo "GEMINI_API_KEY=twój-klucz" > .dev.vars
 npm run worker:dev                # backend na http://localhost:8787
-npm run dev                       # frontend na http://localhost:5173/pdf-insight/
+npm run dev                       # frontend na http://localhost:5173/reader/
 ```
 
 | Zmienna           | Gdzie                                      | Opis                                            |
