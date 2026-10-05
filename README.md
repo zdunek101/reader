@@ -73,12 +73,12 @@ npm run worker:dev                # backend na http://localhost:8787
 npm run dev                       # frontend na http://localhost:5173/reader/
 ```
 
-| Zmienna           | Gdzie                                      | Opis                                            |
-| ----------------- | ------------------------------------------ | ----------------------------------------------- |
-| `VITE_API_URL`    | `.env.local` / zmienna repozytorium GitHub | adres workera                                   |
-| `GEMINI_API_KEY`  | `.dev.vars` / `wrangler secret`            | klucz Google AI Studio — **sekret**             |
-| `GEMINI_MODEL`    | `wrangler.toml`                            | model, domyślnie `gemini-flash-latest`          |
-| `ALLOWED_ORIGINS` | `wrangler.toml`                            | dozwolone originy CORS, rozdzielone przecinkami |
+| Zmienna           | Gdzie                                      | Opis                                                              |
+| ----------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| `VITE_API_URL`    | `.env.local` / zmienna repozytorium GitHub | adres workera                                                     |
+| `GEMINI_API_KEY`  | `.dev.vars` / `wrangler secret`            | klucz Google AI Studio — **sekret**                               |
+| `GEMINI_MODELS`   | `wrangler.toml`                            | modele w kolejności użycia; kolejny przy przeciążeniu lub limicie |
+| `ALLOWED_ORIGINS` | `wrangler.toml`                            | dozwolone originy CORS, rozdzielone przecinkami                   |
 
 Skrypty: `npm run lint`, `npm run format`, `npm test` (Vitest), `npm run build`.
 

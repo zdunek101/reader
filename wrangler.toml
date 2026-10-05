@@ -1,11 +1,14 @@
 name = "reader-api"
 main = "worker/src/index.ts"
 compatibility_date = "2026-10-01"
+workers_dev = true
+preview_urls = false
 
 [vars]
 # Lista dozwolonych originów (CORS), rozdzielona przecinkami.
 ALLOWED_ORIGINS = "https://zdunek101.github.io,http://localhost:5173"
-GEMINI_MODEL = "gemini-flash-latest"
+# Modele w kolejności użycia; kolejny jest próbowany, gdy poprzedni jest przeciążony (503) lub wyczerpał limit (429).
+GEMINI_MODELS = "gemini-flash-latest,gemini-flash-lite-latest"
 
 # Limit żądań na adres IP (darmowy plan Cloudflare).
 [[ratelimits]]

@@ -44,10 +44,31 @@ export async function generateStructured<T>(
   throw new AnalysisError('INVALID_AI_RESPONSE');
 }
 
+/** Próbuje kolejnych modeli z GEMINI_MODELS, gdy poprzedni jest przeciążony lub wyczerpał limit. */
 async function callGemini(env: Env, systemInstruction: string, prompt: string): Promise<string> {
+  const models = env.GEMINI_MODELS.split(',').map((model) => model.trim());
+  let lastError = new AnalysisError('AI_UNAVAILABLE');
+
+  for (const model of models) {
+    try {
+      return await callModel(env, model, systemInstruction, prompt);
+    } catch (error) {
+      if (!(error instanceof AnalysisError)) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError;
+}
+
+async function callModel(
+  env: Env,
+  model: string,
+  systemInstruction: string,
+  prompt: string,
+): Promise<string> {
   let response: Response;
   try {
-    response = await fetch(`${GEMINI_API_URL}/${env.GEMINI_MODEL}:generateContent`, {
+    response = await fetch(`${GEMINI_API_URL}/${model}:generateContent`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY },
       body: JSON.stringify({
