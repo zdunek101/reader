@@ -96,19 +96,19 @@ Zmiany obu agentów przejrzałem przed commitem. Poprawki wynikające z weryfika
 
 ## Gdzie AI się pomyliło i jak to poprawiłem
 
-| Błąd                                                             | Jak wykryłem                                        | Poprawka                                                  |
-| ---------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------- |
-| Polskie słowa rozbite spacjami („Zamawiaj ą cy”) po odczycie PDF | ręczny podgląd tekstu przed wysłaniem do AI         | łączenie fragmentów tekstu bez separatora                 |
-| Dokument angielski dostawał podsumowanie po polsku               | subagent weryfikujący, test na angielskiej fakturze | prompt i opisy schematu po angielsku, jawna reguła języka |
-| Przykład ataku w prompcie wzięty z pliku testowego               | przegląd promptu                                    | opis kategorii ataków zamiast konkretnych fraz            |
-| Brak części kwot (etapy umowy), nazwy produktów jako organizacje | porównanie wyniku z treścią PDF                     | priorytet sum i etapów, nazwy dokładnie jak w tekście     |
-| Analiza kończyła się błędem przy przeciążeniu modelu Google      | test wdrożonego backendu                            | automatyczne przełączenie na zapasowy model               |
-| Wywołanie metody usuniętej w nowej wersji pdf.js                 | kompilator TypeScript                               | użycie nowego API                                         |
+| Błąd                                                                                                         | Jak wykryłem                                               | Poprawka                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Polskie słowa rozbite spacjami („Zamawiaj ą cy”) po odczycie PDF                                             | ręczny podgląd tekstu przed wysłaniem do AI                | łączenie fragmentów tekstu bez separatora                                                                                                                       |
+| Dokument angielski dostawał podsumowanie po polsku                                                           | subagent weryfikujący, test na angielskiej fakturze        | prompt i opisy schematu po angielsku, jawna reguła języka                                                                                                       |
+| Przykład ataku w prompcie wzięty z pliku testowego                                                           | przegląd promptu                                           | opis kategorii ataków zamiast konkretnych fraz                                                                                                                  |
+| Brak części kwot (etapy o równej cenie), wynagrodzenie opisane jako budżet, nazwy produktów jako organizacje | przegląd wyniku przez subagenty i porównanie z treścią PDF | kwoty opisywane etykietą z dokumentu, równe wartości o innym znaczeniu osobno, jasna definicja organizacji; ponowny test na PDF testowym i angielskiej fakturze |
+| Analiza kończyła się błędem przy przeciążeniu modelu Google                                                  | test wdrożonego backendu                                   | automatyczne przełączenie na zapasowy model                                                                                                                     |
+| Wywołanie metody usuniętej w nowej wersji pdf.js                                                             | kompilator TypeScript                                      | użycie nowego API                                                                                                                                               |
 
 ## Weryfikacja
 
 - 21 testów jednostkowych (Vitest): schemat danych, dzielenie tekstu, scalanie wyników.
-- Wynik analizy na wdrożonym demo w 5–17 s.
+- Wynik analizy na wdrożonym demo zwykle w 5–15 s; backend ma twardy limit 40 s na całą analizę.
 - PDF testowy: poprawne kwoty w PLN, EUR i USD, daty w ISO 8601, osoby i organizacje. Aneks ze skanu odczytany przez OCR, próba prompt injection wykryta i zignorowana.
 - Dokument angielski: wartości po angielsku.
 - Brak klucza API w historii Git i na opublikowanej stronie.
