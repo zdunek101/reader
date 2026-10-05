@@ -67,9 +67,11 @@ export async function extractPdfText(file: File, onOcrStart: () => void): Promis
 export function describeExtractionIssues({ ocrPages, unreadablePages }: PdfText): string[] {
   const warnings: string[] = [];
   if (ocrPages.length > 0) {
-    warnings.push(
-      `Strony ${ocrPages.join(', ')} to skany odczytane przez OCR — tekst może zawierać błędy rozpoznawania.`,
-    );
+    const scans =
+      ocrPages.length === 1
+        ? `Strona ${ocrPages[0]} to skan odczytany`
+        : `Strony ${ocrPages.join(', ')} to skany odczytane`;
+    warnings.push(`${scans} przez OCR — tekst może zawierać błędy rozpoznawania.`);
   }
   if (unreadablePages.length > 0) {
     warnings.push(`Nie udało się odczytać tekstu ze stron: ${unreadablePages.join(', ')}.`);

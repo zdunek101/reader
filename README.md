@@ -4,7 +4,7 @@ Aplikacja webowa, która wczytuje plik PDF, tworzy jego krótkie podsumowanie i 
 
 **Demo:** https://zdunek101.github.io/reader/
 
-![Zrzut ekranu PDF Insight](docs/screenshot.png)
+![Zrzut ekranu PDF Insight](docs/screenshot.jpg)
 
 ## Funkcje
 
