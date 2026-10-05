@@ -22,8 +22,11 @@ export default {
         throw new AnalysisError('NOT_FOUND');
 
       const clientIp = request.headers.get('CF-Connecting-IP') ?? 'unknown';
-      const { success } = await env.ANALYZE_RATE_LIMITER.limit({ key: clientIp });
-      if (!success) throw new AnalysisError('RATE_LIMITED');
+      const [clientLimit, globalLimit] = await Promise.all([
+        env.CLIENT_RATE_LIMITER.limit({ key: clientIp }),
+        env.GLOBAL_RATE_LIMITER.limit({ key: 'global' }),
+      ]);
+      if (!clientLimit.success || !globalLimit.success) throw new AnalysisError('RATE_LIMITED');
 
       const insight = await analyzeDocument(env, await readAnalyzeRequest(request));
       return Response.json(insight, { headers: corsHeaders });

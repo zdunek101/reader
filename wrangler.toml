@@ -6,14 +6,20 @@ preview_urls = false
 
 [vars]
 # Lista dozwolonych originów (CORS), rozdzielona przecinkami.
-ALLOWED_ORIGINS = "https://zdunek101.github.io,http://localhost:5173"
+ALLOWED_ORIGINS = "https://zdunek101.github.io"
 # Modele w kolejności użycia; kolejny jest próbowany, gdy poprzedni jest przeciążony (503) lub wyczerpał limit (429).
 GEMINI_MODELS = "gemini-flash-latest,gemini-flash-lite-latest"
 
 # Limit żądań na adres IP (darmowy plan Cloudflare).
 [[ratelimits]]
-name = "ANALYZE_RATE_LIMITER"
+name = "CLIENT_RATE_LIMITER"
 namespace_id = "1001"
 simple = { limit = 6, period = 60 }
+
+# Limit globalny — chroni darmowy limit Gemini przed wyczerpaniem przez jednego klienta z wielu IP.
+[[ratelimits]]
+name = "GLOBAL_RATE_LIMITER"
+namespace_id = "1002"
+simple = { limit = 12, period = 60 }
 
 # Sekret GEMINI_API_KEY ustawiany poleceniem: npx wrangler secret put GEMINI_API_KEY
