@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { AnalysisError } from './analysisError';
+import { AnalysisError, type AnalysisErrorCode } from './analysisError';
 import type { Env } from './env';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
-const REQUEST_TIMEOUT_MS = 25_000;
 /** Zgodnie z briefem: przy błędnej odpowiedzi AI jedna ponowna próba. */
 const MAX_RETRIES = 1;
+/** Kolejny model ma sens tylko przy limicie lub przeciążeniu; inne błędy dotyczą wszystkich modeli. */
+const FALLBACK_ERRORS = new Set<AnalysisErrorCode>(['AI_QUOTA_EXCEEDED', 'AI_OVERLOADED']);
 
 const geminiResponseSchema = z.object({
   candidates: z
@@ -20,6 +21,8 @@ const geminiResponseSchema = z.object({
 interface StructuredRequest {
   systemInstruction: string;
   prompt: string;
+  /** Wspólny termin całej analizy; po jego upływie wywołania są przerywane. */
+  signal: AbortSignal;
 }
 
 /**
@@ -28,14 +31,14 @@ interface StructuredRequest {
  */
 export async function generateStructured<T>(
   env: Env,
-  { systemInstruction, prompt }: StructuredRequest,
+  request: StructuredRequest,
   schema: z.ZodType<T>,
 ): Promise<T> {
-  const schemaPrompt = `${prompt}\n\nReturn only JSON matching this JSON Schema:\n${JSON.stringify(z.toJSONSchema(schema))}`;
+  const schemaPrompt = `${request.prompt}\n\nReturn only JSON matching this JSON Schema:\n${JSON.stringify(z.toJSONSchema(schema))}`;
   let correction = '';
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    const responseText = await callGemini(env, systemInstruction, schemaPrompt + correction);
+    const responseText = await callGemini(env, { ...request, prompt: schemaPrompt + correction });
     const result = schema.safeParse(parseJson(responseText));
     if (result.success) return result.data;
     correction = `\n\nYour previous response did not match the schema:\n${z.prettifyError(result.error)}\nFix it and return the complete JSON.`;
@@ -44,16 +47,16 @@ export async function generateStructured<T>(
   throw new AnalysisError('INVALID_AI_RESPONSE');
 }
 
-/** Próbuje kolejnych modeli z GEMINI_MODELS, gdy poprzedni jest przeciążony lub wyczerpał limit. */
-async function callGemini(env: Env, systemInstruction: string, prompt: string): Promise<string> {
+/** Próbuje kolejnych modeli z GEMINI_MODELS, gdy poprzedni jest przeciążony (503) lub wyczerpał limit (429). */
+async function callGemini(env: Env, request: StructuredRequest): Promise<string> {
   const models = env.GEMINI_MODELS.split(',').map((model) => model.trim());
   let lastError = new AnalysisError('AI_UNAVAILABLE');
 
   for (const model of models) {
     try {
-      return await callModel(env, model, systemInstruction, prompt);
+      return await callModel(env, model, request);
     } catch (error) {
-      if (!(error instanceof AnalysisError)) throw error;
+      if (!(error instanceof AnalysisError) || !FALLBACK_ERRORS.has(error.code)) throw error;
       lastError = error;
     }
   }
@@ -63,10 +66,10 @@ async function callGemini(env: Env, systemInstruction: string, prompt: string): 
 async function callModel(
   env: Env,
   model: string,
-  systemInstruction: string,
-  prompt: string,
+  { systemInstruction, prompt, signal }: StructuredRequest,
 ): Promise<string> {
   let response: Response;
+  let responseText: string;
   try {
     response = await fetch(`${GEMINI_API_URL}/${model}:generateContent`, {
       method: 'POST',
@@ -76,16 +79,18 @@ async function callModel(
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: 'application/json', temperature: 0.1 },
       }),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      signal,
     });
+    responseText = await response.text();
   } catch {
-    throw new AnalysisError('AI_UNAVAILABLE');
+    throw new AnalysisError(signal.aborted ? 'AI_TIMEOUT' : 'AI_UNAVAILABLE');
   }
 
   if (response.status === 429) throw new AnalysisError('AI_QUOTA_EXCEEDED');
+  if (response.status === 503) throw new AnalysisError('AI_OVERLOADED');
   if (!response.ok) throw new AnalysisError('AI_UNAVAILABLE');
 
-  const body = geminiResponseSchema.safeParse(await response.json());
+  const body = geminiResponseSchema.safeParse(parseJson(responseText));
   const parts = body.success ? (body.data.candidates?.[0]?.content?.parts ?? []) : [];
   return parts.map((part) => part.text ?? '').join('');
 }

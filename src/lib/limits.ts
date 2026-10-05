@@ -5,8 +5,13 @@ export const MAX_FILE_BYTES = 10 * 1024 * 1024;
 export const MAX_TEXT_CHARS = 400_000;
 
 /**
- * Powyżej tej długości tekst jest dzielony na fragmenty analizowane osobno.
- * Duże fragmenty (ok. 40 tys. tokenów) ograniczają liczbę równoległych wywołań AI do maks. 3,
- * co mieści się w darmowym limicie zapytań na minutę.
+ * Powyżej tej długości tekst jest dzielony na fragmenty analizowane równolegle.
+ * Duże fragmenty (ok. 40 tys. tokenów) sprawiają, że typowy dokument mieści się w 1–3 wywołaniach AI.
  */
 export const CHUNK_CHARS = 150_000;
+
+/**
+ * Wspólny budżet czasu backendu na całą analizę (wszystkie wywołania AI razem).
+ * Przeglądarka czeka nieco dłużej, żeby otrzymać komunikat backendu, a nie własny timeout.
+ */
+export const ANALYSIS_TIMEOUT_MS = 40_000;

@@ -1,4 +1,4 @@
-import { MAX_TEXT_CHARS } from '../../src/lib/limits';
+import { ANALYSIS_TIMEOUT_MS, MAX_TEXT_CHARS } from '../../src/lib/limits';
 import { analyzeRequestSchema } from '../../src/lib/schema';
 import { AnalysisError } from './analysisError';
 import { analyzeDocument } from './analyzeDocument';
@@ -28,7 +28,12 @@ export default {
       ]);
       if (!clientLimit.success || !globalLimit.success) throw new AnalysisError('RATE_LIMITED');
 
-      const insight = await analyzeDocument(env, await readAnalyzeRequest(request));
+      const analyzeRequest = await readAnalyzeRequest(request);
+      const insight = await analyzeDocument(
+        env,
+        analyzeRequest,
+        AbortSignal.timeout(ANALYSIS_TIMEOUT_MS),
+      );
       return Response.json(insight, { headers: corsHeaders });
     } catch (error) {
       const analysisError = error instanceof AnalysisError ? error : new AnalysisError('INTERNAL');

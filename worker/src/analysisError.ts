@@ -9,15 +9,20 @@ const ERROR_DETAILS = {
   },
   AI_QUOTA_EXCEEDED: {
     status: 429,
-    message: 'Chwilowo wyczerpał się darmowy limit usługi AI. Spróbuj ponownie za minutę.',
+    message: 'Darmowy limit usługi AI został chwilowo wyczerpany. Spróbuj ponownie później.',
+  },
+  AI_OVERLOADED: {
+    status: 503,
+    message: 'Usługa AI jest chwilowo przeciążona. Spróbuj ponownie za chwilę.',
   },
   AI_UNAVAILABLE: {
     status: 502,
     message: 'Usługa AI nie odpowiada. Spróbuj ponownie za chwilę.',
   },
+  AI_TIMEOUT: { status: 504, message: 'Analiza trwała zbyt długo. Spróbuj ponownie.' },
   INVALID_AI_RESPONSE: {
     status: 502,
-    message: 'Usługa AI dwa razy zwróciła wynik w nieprawidłowym formacie. Spróbuj ponownie.',
+    message: 'Usługa AI zwróciła wynik w nieprawidłowym formacie. Spróbuj ponownie.',
   },
   INTERNAL: { status: 500, message: 'Wystąpił nieoczekiwany błąd serwera.' },
 } as const;
